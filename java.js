@@ -1,15 +1,39 @@
-// ============================================================
-//  CONFIGURACIÓN  — edita SOLO este archivo
-// ============================================================
+package com.moncho.desafio02.service;
 
-// 1) Dominio(s) institucional(es) permitidos (minúsculas, sin @).
-//    Debe ser el mismo que insertaste en la tabla dominios_permitidos
-export const ALLOWED_DOMAINS = ["institucion.edu.py"];
+import org.springframework.stereotype.Service;
 
-// 2) Datos de tu proyecto Supabase:
-//    Supabase → Project Settings → API
-//      - Project URL         → SUPABASE_URL
-//      - anon public (key)   → SUPABASE_ANON_KEY   (es pública por diseño)
-//    NUNCA pongas aquí la clave "service_role": esa sí es secreta.
-export const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
-export const SUPABASE_ANON_KEY = "sb_publishable_fIrIwBa7wlmODenDHe795Q_rk-VRrYZ";
+/**
+ * Servicio Java para la validación del dominio institucional 
+ * en el Desafío 02: Registro con bloqueo de dominios.
+ */
+@Service
+public class RegistroService {
+
+    private static final String DOMINIO_AUTORIZADO = "@asuncionescalada.edu.py";
+
+    /**
+     * Valida si el correo electrónico cumple con el dominio institucional requerido[cite: 5].
+     */
+    public boolean validarDominioInstitucional(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        String emailTrimmed = email.trim().toLowerCase();
+        return emailTrimmed.endsWith(DOMINIO_AUTORIZADO);
+    }
+
+    /**
+     * Método de registro con control de excepciones de dominio[cite: 5].
+     */
+    public void registrarUsuario(String email, String password) throws SecurityException {
+        if (!validarDominioInstitucional(email)) {
+            throw new SecurityException("Registro bloqueado: El dominio del correo no está autorizado para este sistema.");
+        }
+        
+        if (password == null || password.length() < 6) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres.");
+        }
+
+        System.out.println("Usuario registrado exitosamente con el correo: " + email);
+    }
+}
